@@ -2,6 +2,8 @@
 
 services:
   nginx:
+    networks:
+      - default
     restart: on-failure
     image: nginx
     volumes:
@@ -11,6 +13,8 @@ services:
 
   # You do not need this if you have configured to use your own s3 file storage
   minio:
+    networks:
+      - default
     restart: on-failure
     image: minio/minio
     environment:
@@ -22,6 +26,8 @@ services:
       - minio_data:/data
 
   postgres:
+    networks:
+      - default
     restart: on-failure
     image: pgvector/pgvector:pg16
     environment:
@@ -38,10 +44,14 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   redis:
+    networks:
+      - default
     restart: on-failure
     image: redis
 
   gotrue:
+    networks:
+      - default
     restart: on-failure
     build:
       context: docker/gotrue
@@ -108,6 +118,8 @@ services:
       - GOTRUE_SAML_PRIVATE_KEY=${GOTRUE_SAML_PRIVATE_KEY}
 
   appflowy_cloud:
+    networks:
+      - default
     restart: on-failure
     environment:
       - RUST_LOG=${RUST_LOG:-info}
@@ -148,6 +160,8 @@ services:
         condition: service_healthy
 
   admin_frontend:
+    networks:
+      - default
     restart: on-failure
     build:
       context: .
@@ -166,6 +180,8 @@ services:
         condition: service_started
 
   ai:
+    networks:
+      - default
     restart: on-failure
     image: appflowyinc/appflowy_ai:${APPFLOWY_AI_VERSION:-latest}
     environment:
@@ -178,6 +194,8 @@ services:
         condition: service_healthy
 
   appflowy_worker:
+    networks:
+      - default
     restart: on-failure
     image: appflowyinc/appflowy_worker:${APPFLOWY_WORKER_VERSION:-latest}
     build:
@@ -208,6 +226,8 @@ services:
         condition: service_healthy
 
   appflowy_web:
+    networks:
+      - default
     restart: on-failure
     image: appflowyinc/appflowy_web:${APPFLOWY_WEB_VERSION:-latest}
     depends_on:
@@ -215,3 +235,6 @@ services:
 volumes:
   postgres_data:
   minio_data:
+
+networks:
+  default:
